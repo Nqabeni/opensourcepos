@@ -676,6 +676,7 @@ class Sale extends CI_Model
 			$this->Attribute->copy_attribute_links($item['item_id'], 'sale_id', $sale_id);
 
 			// Calculate taxes and save the tax information for the sale.  Return the result for printing
+			$customer = $this->Customer->get_info($customer_id);
 			if($customer_id == -1 || $customer->taxable)
 			{
 				if($this->config->item('tax_included'))
@@ -924,7 +925,7 @@ class Sale extends CI_Model
 		$this->db->join('attribute_definitions', 'attribute_definitions.definition_id = attribute_links.definition_id', 'left');
 		$this->db->where('sales_items.sale_id', $sale_id);
 
-		// Entry sequence (this will render kits in the expected sequence)
+		// Entry sequenate (this will render kits in the expected sequence)
 		if($this->config->item('line_sequence') == '0')
 		{
 			$this->db->order_by('line', 'asc');

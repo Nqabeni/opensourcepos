@@ -297,7 +297,7 @@ class Config extends Secure_Controller
 			'suggestions_second_column' => $this->input->post('suggestions_second_column'),
 			'suggestions_third_column' => $this->input->post('suggestions_third_column'),
 			'giftcard_number' => $this->input->post('giftcard_number'),
-			'derive_sale_quantity' => $this->input->post('derive_sale_quantity') != NULL,
+			'derive_sale_quantity' => $this->input->post('derive_sale_quantity') != NULL
 		);
 
 		$this->Module->set_show_office_group($this->input->post('show_office_group') != NULL);

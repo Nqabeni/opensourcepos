@@ -218,7 +218,6 @@ $lang["config_sales_quote_format"] = "Formato de cotação de vendas";
 $lang["config_saved_successfully"] = "Configuração salva com sucesso.";
 $lang["config_saved_unsuccessfully"] = "Configuração não salva.";
 $lang["config_show_office_group"] = "Mostrar ícone do escritório";
-$lang["config_statistics"] = "Enviar estatísticas";
 $lang["config_statistics_tooltip"] = "Envie estatísticas para desenvolvimento e aprimoramento de recursos.";
 $lang["config_stock_location"] = "Localização do Estoque";
 $lang["config_stock_location_duplicate"] = "Por favor, use um nome de localização única.";

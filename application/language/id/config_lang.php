@@ -218,7 +218,6 @@ $lang["config_sales_quote_format"] = "Format Penawaran Penjualan";
 $lang["config_saved_successfully"] = "Konfigurasi berhasil disimpan";
 $lang["config_saved_unsuccessfully"] = "Konfigurasi tidak berhasil disimpan";
 $lang["config_show_office_group"] = "";
-$lang["config_statistics"] = "Kirim statistik";
 $lang["config_statistics_tooltip"] = "Kirim statistik untuk pengembangan dan peningkatan fitur.";
 $lang["config_stock_location"] = "Lokasi Stock";
 $lang["config_stock_location_duplicate"] = "Gunakan nama yang unik untuk lokasi stock";

@@ -812,7 +812,7 @@ CREATE TABLE IF NOT EXISTS `ospos_attribute_definitions` (
  `deleted` TINYINT(1) NOT NULL DEFAULT 0,
  PRIMARY KEY (`definition_id`),
  KEY `definition_fk` (`definition_fk`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 --
 -- Dumping data for table `ospos_attribute_definitions`
@@ -828,7 +828,7 @@ CREATE TABLE IF NOT EXISTS `ospos_attribute_values` (
  `attribute_id` INT NOT NULL AUTO_INCREMENT,
  `attribute_value` VARCHAR(45) NULL,
  PRIMARY KEY (`attribute_id`)
-) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+) ENGINE = InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 
 --
@@ -853,7 +853,7 @@ CREATE TABLE IF NOT EXISTS `ospos_attribute_links` (
  KEY `sale_id` (`sale_id`),
  KEY `receiving_id` (`receiving_id`),
  UNIQUE `attribute_links_uq1` (`attribute_id`, `definition_id`, `item_id`, `sale_id`, `receiving_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 --
 -- Dumping data for table `ospos_attribute_links`

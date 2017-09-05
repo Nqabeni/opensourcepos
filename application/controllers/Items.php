@@ -695,7 +695,7 @@ class Items extends Secure_Controller
 					if(!$invalidated && $this->Item->save($item_data))
 					{
 						$items_taxes_data = NULL;
-						//tax 1
+							//tax 1
 						if(is_numeric($data[7]) && $data[6] != '')
 						{
 							$items_taxes_data[] = array('name' => $data[6], 'percent' => $data[7] );

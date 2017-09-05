@@ -3,6 +3,8 @@
 $lang["customers_account_number"] = "No Pelanggan";
 $lang["customers_account_number_duplicate"] = "Nomor akun ini telah tersimpan di basis data";
 $lang["customers_available_points"] = "";
+$lang["customers_cannot_be_deleted"] = "pelanggan terpilih tidak bisa dihapus. satu atau lebih dari pelanggan yang dipilih memiliki penjualan.";
+$lang["customers_company_name"] = "Company";
 $lang["customers_average"] = "";
 $lang["customers_avg_discount"] = "";
 $lang["customers_basic_information"] = "";
