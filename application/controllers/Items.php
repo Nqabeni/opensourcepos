@@ -23,7 +23,7 @@ class Items extends Secure_Controller
 			'low_inventory' => $this->lang->line('items_low_inventory_items'),
 			'is_serialized' => $this->lang->line('items_serialized_items'),
 			'no_description' => $this->lang->line('items_no_description_items'),
-			'search_custom' => $this->lang->line('items_search_custom_items'),
+			'search_custom' => $this->lang->line('items_search_attributes'),
 			'is_deleted' => $this->lang->line('items_is_deleted'));
 
 		$this->load->view('items/manage', $data);
@@ -133,31 +133,11 @@ class Items extends Secure_Controller
 	}
 
 	/*
-	Gives search suggestions based on what is being searched for
-	*/
-	public function suggest_category()
-	{
-		$suggestions = $this->xss_clean($this->Item->get_category_suggestions($this->input->get('term')));
-
-		echo json_encode($suggestions);
-	}
-
-	/*
 	 Gives search suggestions based on what is being searched for
 	*/
 	public function suggest_location()
 	{
 		$suggestions = $this->xss_clean($this->Item->get_location_suggestions($this->input->get('term')));
-
-		echo json_encode($suggestions);
-	}
-	
-	/*
-	 Gives search suggestions based on what is being searched for
-	*/
-	public function suggest_custom()
-	{
-		$suggestions = $this->xss_clean($this->Item->get_custom_suggestions($this->input->post('term'), $this->input->post('field_no')));
 
 		echo json_encode($suggestions);
 	}
@@ -181,6 +161,12 @@ class Items extends Secure_Controller
 		$data['default_tax_1_rate'] = '';
 		$data['default_tax_2_rate'] = '';
 		$data['item_kits_enabled'] = $this->Employee->has_grant('item_kits', $this->Employee->get_logged_in_employee_info()->person_id);
+		$data['definition_values'] = $this->Attribute->get_attributes_by_item($item_id);
+		$categories = array(-1 => $this->lang->line('common_none_selected_text'));
+		$categories = $categories + $this->Attribute->get_definitions_by_type(CATEGORY);
+		$selected_category = $this->Attribute->get_selected_category($item_id);
+		$data['selected_category'] = empty($selected_category) ? NULL : $selected_category->definition_id;
+		$data['categories'] = $categories;
 
 		$item_info = $this->Item->get_info($item_id);
 		foreach(get_object_vars($item_info) as $property => $value)
@@ -196,6 +182,7 @@ class Items extends Secure_Controller
 			$item_info->receiving_quantity = 1;
 			$item_info->reorder_level = 1;
 			$item_info->item_type = ITEM; // standard
+			$item_info->item_id = $item_id;
 			$item_info->stock_type = HAS_STOCK;
 			$item_info->tax_category_id = 1;  // Standard
 		}
@@ -336,6 +323,13 @@ class Items extends Secure_Controller
 		$this->load->view('barcodes/barcode_sheet', $data);
 	}
 
+	public function attributes($item_id, $definition_id)
+	{
+		$data['item_id'] = $item_id;
+		$data['definition_values'] = $this->Attribute->get_values_by_parent($definition_id);
+ 		$this->load->view('attributes/item', $data);
+	}
+
 	public function bulk_edit()
 	{
 		$suppliers = array('' => $this->lang->line('items_none'));
@@ -368,10 +362,9 @@ class Items extends Secure_Controller
 		$item_data = array(
 			'name' => $this->input->post('name'),
 			'description' => $this->input->post('description'),
-			'category' => $this->input->post('category'),
+			'supplier_id' => $this->input->post('supplier_id') == '' ? NULL : $this->input->post('supplier_id'),
 			'item_type' => $this->input->post('item_type') == NULL ? ITEM : $this->input->post('item_type'),
 			'stock_type' => $this->input->post('stock_type') == NULL ? HAS_STOCK : $this->input->post('stock_type'),
-			'supplier_id' => $this->input->post('supplier_id') == '' ? NULL : $this->input->post('supplier_id'),
 			'item_number' => $this->input->post('item_number') == '' ? NULL : $this->input->post('item_number'),
 			'cost_price' => parse_decimals($this->input->post('cost_price')),
 			'unit_price' => parse_decimals($this->input->post('unit_price')),
@@ -379,17 +372,7 @@ class Items extends Secure_Controller
 			'receiving_quantity' => parse_decimals($this->input->post('receiving_quantity')),
 			'allow_alt_description' => $this->input->post('allow_alt_description') != NULL,
 			'is_serialized' => $this->input->post('is_serialized') != NULL,
-			'deleted' => $this->input->post('is_deleted') != NULL,
-			'custom1' => $this->input->post('custom1') == NULL ? '' : $this->input->post('custom1'),
-			'custom2' => $this->input->post('custom2') == NULL ? '' : $this->input->post('custom2'),
-			'custom3' => $this->input->post('custom3') == NULL ? '' : $this->input->post('custom3'),
-			'custom4' => $this->input->post('custom4') == NULL ? '' : $this->input->post('custom4'),
-			'custom5' => $this->input->post('custom5') == NULL ? '' : $this->input->post('custom5'),
-			'custom6' => $this->input->post('custom6') == NULL ? '' : $this->input->post('custom6'),
-			'custom7' => $this->input->post('custom7') == NULL ? '' : $this->input->post('custom7'),
-			'custom8' => $this->input->post('custom8') == NULL ? '' : $this->input->post('custom8'),
-			'custom9' => $this->input->post('custom9') == NULL ? '' : $this->input->post('custom9'),
-			'custom10' => $this->input->post('custom10') == NULL ? '' : $this->input->post('custom10')
+			'deleted' => $this->input->post('is_deleted') != NULL
 		);
 
 		$x = $this->input->post('tax_category_id');
@@ -423,6 +406,7 @@ class Items extends Secure_Controller
 			{
 				$item_id = $item_data['item_id'];
 				$new_item = TRUE;
+				$this->Attribute->set_selected_category($item_id, $this->input->post('category'));
 			}
 			
 			$items_taxes_data = array();
@@ -671,29 +655,17 @@ class Items extends Secure_Controller
 					// XSS file data sanity check
 					$data = $this->xss_clean($data);
 					
-					/* haven't touched this so old templates will work, or so I guess... */
-					if(sizeof($data) >= 23)
+					if(sizeof($data) >= 16)
 					{
 						$item_data = array(
 							'name'					=> $data[1],
 							'description'			=> $data[11],
-							'category'				=> $data[2],
 							'cost_price'			=> $data[4],
 							'unit_price'			=> $data[5],
 							'reorder_level'			=> $data[10],
 							'supplier_id'			=> $this->Supplier->exists($data[3]) ? $data[3] : NULL,
 							'allow_alt_description'	=> $data[12] != '' ? '1' : '0',
-							'is_serialized'			=> $data[13] != '' ? '1' : '0',
-							'custom1'				=> $data[14],
-							'custom2'				=> $data[15],
-							'custom3'				=> $data[16],
-							'custom4'				=> $data[17],
-							'custom5'				=> $data[18],
-							'custom6'				=> $data[19],
-							'custom7'				=> $data[20],
-							'custom8'				=> $data[21],
-							'custom9'				=> $data[22],
-							'custom10'				=> $data[23]
+							'is_serialized'			=> $data[13] != '' ? '1' : '0'
 						);
 
 						/* we could do something like this, however, the effectiveness of
@@ -701,7 +673,7 @@ class Items extends Secure_Controller
 						  into that directory, so you really can do whatever you want, this probably
 						  needs further discussion  */
 
-						$pic_file = $data[24];
+						$pic_file = $data[18];
 						/*if(strcmp('.htaccess', $pic_file)==0) {
 							$pic_file='';
 						}*/
@@ -728,7 +700,6 @@ class Items extends Secure_Controller
 						{
 							$items_taxes_data[] = array('name' => $data[6], 'percent' => $data[7] );
 						}
-
 						//tax 2
 						if(is_numeric($data[9]) && $data[8] != '')
 						{

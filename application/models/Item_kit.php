@@ -61,7 +61,7 @@ class Item_kit extends CI_Model
 		kit_discount_percent,
 		price_option,
 		print_option,
-		category,
+		definition_name, 
 		supplier_id,
 		item_number,
 		cost_price,
@@ -72,21 +72,13 @@ class Item_kit extends CI_Model
 		allow_alt_description,
 		is_serialized,
 		items.deleted,
-		custom1,
-		custom2,
-		custom3,
-		custom4,
-		custom5,
-		custom6,
-		custom7,
-		custom8,
-		custom9,
-		custom10,
 		item_type,
 		stock_type');
 
 		$this->db->from('item_kits');
 		$this->db->join('items', 'item_kits.item_id = items.item_id', 'left');
+		$this->db->join('attribute_links', 'attribute_links.item_id = items.item_id', 'left');
+		$this->db->join('attribute_definitions', 'attribute_links.definition_id = attribute_definitions.definition_id AND definition_type = \'CATEGORY\'', 'left');
 		$this->db->where('item_kit_id', $item_kit_id);
 
 		$query = $this->db->get();

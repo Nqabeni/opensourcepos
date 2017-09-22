@@ -1,5 +1,7 @@
 <?php 
 
+$lang["module_attributes"] = "";
+$lang["module_attributes_desc"] = "";
 $lang["module_both"] = "";
 $lang["module_config"] = "Paramètres";
 $lang["module_config_desc"] = "Paramètres de la boutique";
