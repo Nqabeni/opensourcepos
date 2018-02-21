@@ -260,6 +260,7 @@ class Attribute extends CI_Model
 	public function set_selected_category($item_id, $definition_id)
 	{
 		$this->db->trans_start();
+
 		if ($this->link_exists($item_id))
 		{
 			$this->db->where('item_id', $item_id);
@@ -272,6 +273,7 @@ class Attribute extends CI_Model
 		}
 
 		$this->db->trans_complete();
+
 		return $this->db->trans_status();
 	}
 

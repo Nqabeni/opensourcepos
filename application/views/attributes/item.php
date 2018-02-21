@@ -21,19 +21,21 @@ foreach($definition_values as $definition_value)
 						'name' => $definition_name,
 						'value' => date($this->config->item('dateformat') . ' ' . $this->config->item('timeformat'), strtotime($definition_value['attribute_value'])),
 						'class' => 'form-control input-sm',
-						'data-definiition-id' => $definition_value['definition_id'],
+						'data-definition-id' => $definition_value['definition_id'],
 						'readonly' => 'true'));
 				}
 				else if ($definition_value['definition_type'] == DROPDOWN)
 				{
 					$values = $this->Attribute->get_definition_values($definition_id);
 					$selected_value = $this->Attribute->get_link_value($item_id, $definition_id);
-					echo form_dropdown($definition_name, $values, (empty($selected_value) ? null : $selected_value->attribute_id), "class='form-control' data-definition-id='$definition_id'");
+					echo form_dropdown($definition_name, $values, (empty($selected_value) ? NULL : $selected_value->attribute_id), "class='form-control' data-definition-id='$definition_id'");
 				}
 				else if ($definition_value['definition_type'] == TEXT)
 				{
 					$attribute_value = $this->Attribute->get_attribute_value($item_id, $definition_id);
-					echo form_input($definition_name, $attribute_value->attribute_value, "class='form-control' data-attribute-id='$attribute_value->attribute_id'");
+					$value = (empty($attribute_value) || empty($attribute_value->attribute_value)) ? NULL : $attribute_value->attribute_value;
+					$id = (empty($attribute_value) || empty($attribute_value->attribute_id)) ? NULL : $attribute_value->attribute_id;
+					echo form_input($definition_name, $value, "class='form-control' data-attribute-id='$id'");
 				}
 				?>
 			</div>
